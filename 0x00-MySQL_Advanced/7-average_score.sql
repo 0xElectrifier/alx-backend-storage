@@ -2,7 +2,7 @@
 -- that computes and store the average score for a student.
 DELIMITER //
 
-DROP PROCEDURE IF EXISTS ComputeAverageScoreForUser //
+DROP PROCEDURE IF EXISTS ComputeAverageScoreForUser//
 
 CREATE PROCEDURE ComputeAverageScoreForUser (IN `user_id` INT)
     BEGIN
