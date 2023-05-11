@@ -29,25 +29,23 @@ def nginx_req_stat():
     print('{} status check'.format(get_root_count))
 
 
-ips = nginx.aggregate([
-    {
-        '$group':
-        {
-            '_id': '$ip',
-            'count': { '$sum': 1 }
-        }
-    },
-    {
-        '$sort': { 'ip': -1 }
-    }
-])
-
-
 def nginx_ip_stat():
     """
     Prints some stats about ip that made request to Nginx from data
     stored in MongoDB
     """
+    ips = nginx.aggregate([
+        {
+            '$group':
+            {
+                '_id': '$ip',
+                'count': { '$sum': 1 }
+            }
+        },
+        {
+            '$sort': { 'ip': -1 }
+        }
+    ])
     print('IPs:')
     for ip in ips:
         print('{}: {}'.format(ip.get('ip'), ip.get('count')))
