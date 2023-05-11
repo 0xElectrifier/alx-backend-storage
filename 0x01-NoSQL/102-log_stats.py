@@ -1,45 +1,58 @@
 #!/usr/bin/env python3
-""" Log stats - new version """
+"""Script that provides some stats about Nginx logs stored in MongoDB"""
 from pymongo import MongoClient
 
 
-def nginx_stats_check():
-    """ provides some stats about Nginx logs stored in MongoDB:"""
-    client = MongoClient()
-    collection = client.logs.nginx
+client = MongoClient()
+db = client.logs
+nginx = db.nginx
 
-    num_of_docs = collection.count_documents({})
-    print("{} logs".format(num_of_docs))
-    print("Methods:")
-    methods_list = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-    for method in methods_list:
-        method_count = collection.count_documents({"method": method})
-        print("\tmethod {}: {}".format(method, method_count))
-    status = collection.count_documents({"method": "GET", "path": "/status"})
-    print("{} status check".format(status))
+log_count = nginx.count_documents({})
+get_method_count = nginx.count_documents({ 'method': 'GET' })
+post_method_count = nginx.count_documents({ 'method': 'POST' })
+put_method_count = nginx.count_documents({ 'method': 'PUT' })
+patch_method_count = nginx.count_documents({ 'method': 'PATCH' })
+delete_method_count = nginx.count_documents({ 'method': 'DELETE' })
 
-    print("IPs:")
-
-    top_IPs = collection.aggregate([
-        {"$group":
-         {
-             "_id": "$ip",
-             "count": {"$sum": 1}
-         }
-         },
-        {"$sort": {"count": -1}},
-        {"$limit": 10},
-        {"$project": {
-            "_id": 0,
-            "ip": "$_id",
-            "count": 1
-        }}
-    ])
-    for top_ip in top_IPs:
-        count = top_ip.get("count")
-        ip_address = top_ip.get("ip")
-        print("\t{}: {}".format(ip_address, count))
+get_root_count = nginx.count_documents({ 'method': 'GET', 'path': '/status' })
 
 
-if __name__ == "__main__":
-    nginx_stats_check()
+def nginx_req_stat():
+    """Prints some stats about Nginx stored in MongoDB"""
+    print('{} logs'.format(log_count))
+    print('Methods:')
+    print('    method GET: {}'.format(get_method_count))
+    print('    method POST: {}'.format(post_method_count))
+    print('    method PUT: {}'.format(put_method_count))
+    print('    method PATCH: {}'.format(patch_method_count))
+    print('    method DELETE: {}'.format(delete_method_count))
+    print('{} status check'.format(get_root_count))
+
+
+ips = nginx.aggregate([
+    {
+        '$group':
+        {
+            '_id': '$ip',
+            'count': { '$sum': 1 }
+        }
+    },
+    {
+        '$sort': { 'ip': -1 }
+    }
+])
+
+
+def nginx_ip_stat():
+    """
+    Prints some stats about ip that made request to Nginx from data
+    stored in MongoDB
+    """
+    print('IPs:')
+    for ip in ips:
+        print('{}: {}'.format(ip.get('ip'), ip.get('count')))
+
+
+if __name__ == '__main__':
+    nginx_req_stat()
+    nginx_ip_stat()
