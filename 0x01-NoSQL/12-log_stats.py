@@ -21,11 +21,11 @@ def print_nginx_stat():
     """Prints some stats about Nginx stored in MongoDB"""
     print('{} logs'.format(log_count))
     print('Methods:')
-    print('    Method GET: {}'.format(get_method_count))
-    print('    Method POST: {}'.format(post_method_count))
-    print('    Method PUT: {}'.format(put_method_count))
-    print('    Method PATCH: {}'.format(patch_method_count))
-    print('    Method DELETE: {}'.format(delete_method_count))
+    print('    method GET: {}'.format(get_method_count))
+    print('    method POST: {}'.format(post_method_count))
+    print('    method PUT: {}'.format(put_method_count))
+    print('    method PATCH: {}'.format(patch_method_count))
+    print('    method DELETE: {}'.format(delete_method_count))
     print('{} status check'.format(get_root_count))
 
 
