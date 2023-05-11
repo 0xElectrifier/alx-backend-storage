@@ -30,10 +30,7 @@ def nginx_req_stat():
 
 
 def nginx_ip_stat():
-    """
-    Prints some stats about ip that made request to Nginx from data
-    stored in MongoDB
-    """
+    """Prints some stats about Nginx stored in MongoDB"""
     ips = nginx.aggregate([
         {
             '$group':
