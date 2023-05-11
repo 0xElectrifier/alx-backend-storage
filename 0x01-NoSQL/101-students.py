@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
-"""
-students
-"""
+"""Module for Task_14, defines a function 'top_students'"""
 
 
 def top_students(mongo_collection):
-    """ students by score """
+    """Returns all students sorted by average score"""
     return mongo_collection.aggregate([
         {
-            "$project":
+            '$project':
                 {
-                    "name": "$name",
-                    "averageScore": {"$avg": "$topics.score"}
+                    'name': '$name',
+                    'averageScore': { '$avg': '$topics.score' }
                 }
         },
         {
-            "$sort":
-                {
-                    "averageScore": -1
-                }
+            '$sort': { 'averageScore': -1 }
         }
     ])
