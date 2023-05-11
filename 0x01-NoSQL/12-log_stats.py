@@ -1,39 +1,33 @@
 #!/usr/bin/env python3
-"""
-Provide some stats about Nginx logs stored in MongoDB
-Database: logs, Collection: nginx, Display same as example
-first line: x logs, x number of documents in this collection
-second line: Methods
-5 lines with method = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-one line with method=GET, path=/status
-"""
+"""Script that provides some stats about Nginx logs stored in MongoDB"""
 from pymongo import MongoClient
 
 
-METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+client = MongoClient()
+db = client.logs
+nginx = db.nginx
+
+log_count = nginx.count_documents({})
+get_method_count = nginx.count_documents({ 'method': 'GET' })
+post_method_count = nginx.count_documents({ 'method': 'POST' })
+put_method_count = nginx.count_documents({ 'method': 'PUT' })
+patch_method_count = nginx.count_documents({ 'method': 'PATCH' })
+delete_method_count = nginx.count_documents({ 'method': 'DELETE' })
+
+get_root_count = nginx.count_documents({ 'method': 'GET', 'path': '/status' })
 
 
-def log_stats(mongo_collection, option=None):
-    """
-    Prototype: def log_stats(mongo_collection, option=None):
-    Provide some stats about Nginx logs stored in MongoDB
-    """
-    items = {}
-    if option:
-        value = mongo_collection.count_documents(
-            {"method": {"$regex": option}})
-        print(f"\tmethod {option}: {value}")
-        return
-
-    result = mongo_collection.count_documents(items)
-    print(f"{result} logs")
-    print("Methods:")
-    for method in METHODS:
-        log_stats(nginx_collection, method)
-    status_check = mongo_collection.count_documents({"path": "/status"})
-    print(f"{status_check} status check")
+def print_nginx_stat():
+    """Prints some stats about Nginx stored in MongoDB"""
+    print('{} logs'.format(log_count))
+    print('Methods:')
+    print('    Method GET: {}'.format(get_method_count))
+    print('    Method POST: {}'.format(post_method_count))
+    print('    Method PUT: {}'.format(put_method_count))
+    print('    Method PATCH: {}'.format(patch_method_count))
+    print('    Method DELETE: {}'.format(delete_method_count))
+    print('{} status check'.format(get_root_count))
 
 
-if __name__ == "__main__":
-    nginx_collection = MongoClient('mongodb://127.0.0.1:27017').logs.nginx
-    log_stats(nginx_collection)
+if __name__ == '__main__':
+    print_nginx_stat()
