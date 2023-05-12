@@ -3,30 +3,26 @@
 from pymongo import MongoClient
 
 
-client = MongoClient()
-db = client.logs
-nginx = db.nginx
-
-log_count = nginx.count_documents({})
-get_method_count = nginx.count_documents({ 'method': 'GET' })
-post_method_count = nginx.count_documents({ 'method': 'POST' })
-put_method_count = nginx.count_documents({ 'method': 'PUT' })
-patch_method_count = nginx.count_documents({ 'method': 'PATCH' })
-delete_method_count = nginx.count_documents({ 'method': 'DELETE' })
-
-get_root_count = nginx.count_documents({ 'method': 'GET', 'path': '/status' })
-
-
 def print_nginx_stat():
     """Prints some stats about Nginx stored in MongoDB"""
-    print('{} logs'.format(log_count))
+    client = MongoClient()
+    db = client.logs
+    nginx = db.nginx
+
+    methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+    print('{} logs'.format(nginx.count_documents({})))
     print('Methods:')
-    print('    method GET: {}'.format(get_method_count))
-    print('    method POST: {}'.format(post_method_count))
-    print('    method PUT: {}'.format(put_method_count))
-    print('    method PATCH: {}'.format(patch_method_count))
-    print('    method DELETE: {}'.format(delete_method_count))
-    print('{} status check'.format(get_root_count))
+
+    for method in methods:
+        method_count = nginx.count_documents({ 'method': method })
+        print('    method {}: {}'.format(method, method_count))
+
+    print('{} status check'.format(nginx.count_documents(
+        {
+            'method': 'GET',
+            'path': '/status'
+        }
+    )))
 
 
 if __name__ == '__main__':
