@@ -15,7 +15,7 @@ def print_nginx_stat():
 
     for method in methods:
         method_count = nginx.count_documents({ 'method': method })
-        print('    method {}: {}'.format(method, method_count))
+        print('\tmethod {}: {}'.format(method, method_count))
 
     print('{} status check'.format(nginx.count_documents(
         {
@@ -41,7 +41,7 @@ def print_nginx_stat():
     ]))
     print('IPs:')
     for ip in ips:
-        print('    {}: {}'.format(ip.get('_id'), ip.get('count')))
+        print('\t{}: {}'.format(ip.get('_id'), ip.get('count')))
 
 
 if __name__ == '__main__':
