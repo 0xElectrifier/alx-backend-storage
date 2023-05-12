@@ -9,13 +9,14 @@ def print_nginx_stat():
     db = client.logs
     nginx = db.nginx
 
-    methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
     print('{} logs'.format(nginx.count_documents({})))
     print('Methods:')
 
+
+    methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
     for method in methods:
         method_count = nginx.count_documents({ 'method': method })
-        print('    method {}: {}'.format(method, method_count))
+        print('\tmethod {}: {}'.format(method, method_count))
 
     print('{} status check'.format(nginx.count_documents(
         {
